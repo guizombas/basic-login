@@ -1,7 +1,6 @@
 import { createContext, useContext } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
-
 interface IAuthContext{
     login(token: string): void,
     token?: string,
