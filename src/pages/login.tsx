@@ -12,20 +12,22 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, styled, ThemeProvider } from '@mui/material/styles';
 import { Paper } from '@mui/material';
-import { useForm } from 'react-hook-form';
 import { useLoginController } from '../controllers/userControllers';
 import { useAuth } from '../context/authContext';
+import UserImage from '../assets/images/users.png'
+import { withAuth } from '../hocs/withAuth';
+import { withTemplate } from '../hocs/withTemplate';
 
 const theme = createTheme();
 
-export default function Login() {
+function Login() {
 
   const { execute: loginAPI, value: responseAPI, error, loading } = useLoginController();
   const { login } = useAuth();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [ validation, setValidation ] = useState({
+  const [validation, setValidation] = useState({
     username: false,
     password: false
   });
@@ -33,13 +35,13 @@ export default function Login() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!username || !password){
+    if (!username || !password) {
       setValidation({
         username: !Boolean(username),
         password: !Boolean(password)
       })
     }
-    else{
+    else {
       loginAPI({
         username,
         password
@@ -49,14 +51,14 @@ export default function Login() {
 
   };
 
-  useEffect(()=>{
-    if (responseAPI){
+  useEffect(() => {
+    if (responseAPI) {
       login(responseAPI.token);
     }
   }, [responseAPI])
 
-  useEffect(()=>{
-    if ((validation.username && username) || (validation.password && password) ){
+  useEffect(() => {
+    if ((validation.username && username) || (validation.password && password)) {
       setValidation({
         username: !Boolean(username),
         password: !Boolean(password)
@@ -65,82 +67,73 @@ export default function Login() {
   }, [validation, username, password])
 
   return (
-    <ThemeProvider theme={theme}>
-      <div style={{
-        width: "100%",
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundImage: "linear-gradient(to left bottom, #020024, #103259, #156393, #089acb, #00d4ff)"
-      }}>
+    <Paper elevation={10} sx={{
+      padding: 4,
+    }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
 
-        <Container component="main" maxWidth="xs">
-          <Paper elevation={10} sx={{
-            padding: 4,
-          }}>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-              }}
-            >
-              <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                L
-              </Avatar>
-              <Typography component="h1" variant="h5">
-                Login
-              </Typography>
-              <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                <TextField
-                  margin="normal"
-                  value={username}
-                  onChange={e => setUsername(e.target.value)}
-                  required
-                  fullWidth
-                  id="username"
-                  label="Usuário"
-                  name="username"
-                  autoComplete="username"
-                  helperText={validation.username ? "Preencha o usuário!" : undefined}
-                  error={validation.username}
-                  autoFocus
-                />
-                <TextField
-                  margin="normal"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  required
-                  fullWidth
-                  name="password"
-                  label="Senha"
-                  type="password"
-                  helperText={validation.password ? "Preencha a senha!" : undefined}
-                  error={validation.password}
-                  id="password"
-                  autoComplete="current-password"
-                />
-                {
-                  error && <div style={{
-                    color: "red",
-                    textAlign: "center"
-                  }}>{error.message}</div>
-                }
-                <LoadingButton
-                  loading={loading}
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  Fazer Login
-                </LoadingButton>
-              </Box>
-            </Box>
-          </Paper>
-        </Container>
-      </div>
-    </ThemeProvider>
+        <img src={UserImage} alt="ícone representando 3 pessoas em diferentes cores" width={120} height={100} />
+
+        <Typography component="h1" variant="h5">
+          Login
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            required
+            fullWidth
+            id="username"
+            label="Usuário"
+            name="username"
+            autoComplete="username"
+            helperText={validation.username ? "Preencha o usuário!" : undefined}
+            error={validation.username}
+            autoFocus
+          />
+          <TextField
+            margin="normal"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+            fullWidth
+            name="password"
+            label="Senha"
+            type="password"
+            helperText={validation.password ? "Preencha a senha!" : undefined}
+            error={validation.password}
+            id="password"
+            autoComplete="current-password"
+          />
+          {
+            error && <div style={{
+              color: "red",
+              textAlign: "center"
+            }}>{error.message}</div>
+          }
+          <LoadingButton
+            loading={loading}
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Fazer Login
+          </LoadingButton>
+        </Box>
+      </Box>
+    </Paper>
   );
 }
+
+export default withAuth(
+  withTemplate(
+    Login
+  ));

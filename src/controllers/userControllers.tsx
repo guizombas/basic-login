@@ -6,9 +6,9 @@ import { fetchAPI } from "../services/api";
 export function useListUsersController() {
     const { token } = useAuth();
 
-    return useAsync(async (loginData: ILoginRequest) => fetchAPI<IUser>("/users", {
+    return useAsync(async () => fetchAPI<IUser>("/user", {
         token
-    }));
+    }), []);
 }
 
 export function useLoginController() {
